@@ -129,7 +129,7 @@ void loop(){
 
 
 //-----------------------
-void command_recive(){
+void command_recive(){ //arduino _> esp32 -> android tx 계열 
     if( SERIAL_ISC.available() > 0 ){
         String rx = SERIAL_ISC.readStringUntil('\n');
         strcpy( com.rx_char , rx.c_str() );
@@ -175,6 +175,30 @@ void command_recive(){
 
             case ISC_WORK: /*esp가 안드로이드로 보내는 코드*/
                     sprintf(com.str, "WORK: %d.%d", com.array[1], com.array[2] );
+                   if( com.array[1] ==  0 ){ // 이게 안드로이드 장비 id 0, 1, 2 ...
+                        for(int i=0; i<5; i++){ // 안드로이드로 나가는 UDP신호. 5~10회 정도 보내줘야 안정적.
+                            udp1.send("#AND1", com.array[2]); // com.array는 건드릴 필요 없음.
+                            delay(2);
+                        }
+                    }
+
+                    if( com.array[1] ==  1 ){
+                        for(int i=0; i<5; i++){
+                            udp1.send("#AND2", com.array[2]);
+                            delay(2);
+                        }
+                    }
+
+                    if( com.array[1] ==  2 ){
+                        for(int i=0; i<5; i++){
+                            udp1.send("#AND3", com.array[2]);
+                            delay(2);
+                        }
+                    }
+
+
+                   
+                   
                     if( com.array[1] ==  D_UDPPLAYER_DSP ){
                         for(int i=0; i<5; i++){
                             udp1.send("#DSP", com.array[2]);
